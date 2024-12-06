@@ -2,19 +2,26 @@ version: "3.9"
 
 services:
   web:
-    build: .
-    image: volweb-app
+    build:
+      context: .
+      args:
+        - DATABASE_URL=file:${DATABASE_PATH}/db.sqlite
     container_name: volweb-app
     ports:
       - "8080:8080"
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
       - NODE_ENV=production
-      - SESSION_SECRET="124afasf"
+      - SESSION_SECRET=${SESSION_SECRET}
+      - DATABASE_PATH=file:${DATABASE_PATH}/db.sqlite
     volumes:
       - type: bind
         source: ./Ilastik/ilastik
         target: /app/modules/ilastik
+      - app_dbdata:${DATABASE_PATH}
+      - app_filedata:/app/data
+      - app_logdata:/app/logs
+      - app_sessiondata:/app/sessions
     # deploy:
     #   resources:
     #     reservations:
@@ -25,7 +32,18 @@ services:
     networks:
       - volweb-network
     restart: unless-stopped
-    command: ["conda", "run", "--no-capture-output", "-n", "volweb", "npm", "start", "8080", "0.0.0.0"]
+    command:
+      [
+        "conda",
+        "run",
+        "--no-capture-output",
+        "-n",
+        "volweb",
+        "npm",
+        "start",
+        "8080",
+        "0.0.0.0",
+      ]
 
   nginx:
     image: nginx:alpine
@@ -36,7 +54,7 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - ./ssl:/etc/nginx/ssl
     environment:
-      - DOMAIN_NAME=_ 
+      - DOMAIN_NAME=_
     networks:
       - volweb-network
 
@@ -44,3 +62,8 @@ networks:
   volweb-network:
     driver: bridge
 
+volumes:
+  app_dbdata:
+  app_filedata:
+  app_logdata:
+  app_sessiondata:

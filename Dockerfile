@@ -11,11 +11,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     NVIDIA_DRIVER_CAPABILITIES=compute,utility \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    DATABASE_URL=file:/app/db.sqlite \
     SETUSER=volweb \
     UID=10001
-
-
 
 # Create and setup user with proper home directory
 RUN useradd -m -s /bin/bash -u ${UID} ${SETUSER} && \
@@ -84,6 +81,8 @@ COPY --chown=${SETUSER}:${SETUSER} ./vol-web-server-dev /app/
 
 
 # Follow README instructions
+ARG DATABASE_URL
+ENV DATABASE_URL=$DATABASE_URL
 
 RUN chmod +x /app/build_client.sh && \
     . /opt/conda/etc/profile.d/conda.sh && \
@@ -94,7 +93,7 @@ RUN chmod +x /app/build_client.sh && \
 
 # Set up directories and permissions
 
-RUN chmod -R 770 /app/db /app/modules
+RUN chmod -R 770 /app/database /app/modules
 
 
 # Expose port
