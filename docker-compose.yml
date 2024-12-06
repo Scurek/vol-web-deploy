@@ -5,20 +5,20 @@ services:
     build:
       context: .
       args:
-        - DATABASE_URL=file:${DATABASE_PATH}/db.sqlite
+        - DATABASE_URL=file:/app/database/db.sqlite
     container_name: volweb-app
     ports:
       - "8080:8080"
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
       - NODE_ENV=production
-      - SESSION_SECRET=${SESSION_SECRET}
-      - DATABASE_PATH=file:${DATABASE_PATH}/db.sqlite
+      - SESSION_SECRET=123123123
+      - DATABASE_PATH=file:/app/database/db.sqlite
     volumes:
       - type: bind
         source: ./Ilastik/ilastik
         target: /app/modules/ilastik
-      - app_dbdata:${DATABASE_PATH}
+      - app_dbdata:/app/database
       - app_filedata:/app/data
       - app_logdata:/app/logs
       - app_sessiondata:/app/sessions
