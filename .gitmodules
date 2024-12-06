@@ -1,0 +1,4 @@
+[submodule "vol-web-server-dev"]
+	path = vol-web-server-dev
+	url = ../../nanovis/vol-web-server-dev.git
+	branch = main
